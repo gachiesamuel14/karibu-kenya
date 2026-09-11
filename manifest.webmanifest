@@ -1,0 +1,33 @@
+{
+  "name": "Karibu — Dating Kenya",
+  "short_name": "Karibu",
+  "description": "Location-based matchmaking for Kenya. Meet people nearby by county, distance, and vibe.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f0c0a",
+  "theme_color": "#c45c3e",
+  "lang": "en-KE",
+  "categories": ["social", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

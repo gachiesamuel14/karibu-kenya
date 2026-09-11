@@ -1,0 +1,8 @@
+{
+  "appId": "ke.karibu.app",
+  "appName": "Karibu",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  }
+}

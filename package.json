@@ -1,0 +1,20 @@
+{
+  "name": "karibu-kenya",
+  "version": "1.0.0",
+  "description": "Karibu — location-based dating app for Kenya",
+  "private": true,
+  "scripts": {
+    "cap:sync": "npx cap sync android",
+    "android": "npx cap sync android && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/geolocation": "^7.0.0",
+    "@capacitor/app": "^7.0.0",
+    "@capacitor/status-bar": "^7.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.0.0"
+  }
+}
