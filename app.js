@@ -1,3 +1,4 @@
+let deferredInstall = null;
 const COUNTIES = ["Nairobi","Mombasa","Kisumu","Kiambu","Nakuru","Uasin Gishu","Machakos","Kajiado","Kilifi","Nyeri","Meru","Kakamega","Kisii","Bungoma","Laikipia"];
 const DEMO = [
   { id:"p1", name:"Amina", age:26, county:"Mombasa", tribe:"Swahili", religion:"Muslim", mode:"Professional", bio:"Coastal evenings, chai, and conversations that last too long.", interests:["Travel","Cooking","Art"], photo:"https://images.unsplash.com/photo-1531123897727-8f1f997e0c2d?auto=format&fit=crop&w=900&q=80", lat:-4.0435, lng:39.6682 },
@@ -31,8 +32,21 @@ const state = {
   filters: { county: "", maxKm: 250, minAge: 21, maxAge: 40, mode: "", religion: "" },
   activeChat: null,
   location: store.get("karibu_loc", null),
-  toast: ""
+  toast: "",
+  canInstall: false,
+  isStandalone: window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true
 };
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  state.canInstall = true;
+  if (state.view === "home") render();
+});
+window.addEventListener("appinstalled", () => {
+  deferredInstall = null;
+  state.canInstall = false;
+  toast("Karibu installed. Open it from your home screen.");
+});
 function save() {
   store.set("karibu_user", state.user);
   store.set("karibu_likes", state.likes);
@@ -109,7 +123,7 @@ function home() {
     <div class="kicker">Location-based matchmaking · Kenya</div>
     <h1>Meet people<br>who are actually<br>nearby.</h1>
     <p class="lead">Karibu is built for Nairobi, Mombasa, Kisumu, Kiambu and everywhere in between. Filter by county, distance, tribe, faith, or mode.</p>
-    <div class="cta-row"><button class="primary" data-go="${state.user ? "discover" : "auth"}">Start matching</button><button class="ghost" id="loc-btn">Use my location</button></div>
+    <div class="cta-row"><button class="primary" data-go="${state.user ? "discover" : "auth"}">Start matching</button><button class="ghost" id="loc-btn">Use my location</button>${!state.isStandalone ? `<button class="ghost" id="install-btn">${state.canInstall ? "Install app" : "How to install"}</button>` : `<span class="pill" style="align-self:center">Installed ✓</span>`}</div>
     <div class="stats"><div><b>47</b>counties</div><div><b>GPS</b>nearby first</div><div><b>Safe</b>report & block</div></div>
   </div><div class="phone"><div class="card-stack"><article class="person-card"><img src="${DEMO[0].photo}" alt="" /><div class="card-meta"><h3>${DEMO[0].name}, ${DEMO[0].age}</h3><div class="muted">${DEMO[0].county} · ${DEMO[0].mode}</div><div class="pills">${DEMO[0].interests.map(i=>`<span class="pill">${i}</span>`).join("")}</div></div></article></div></div></section>
   <section class="wrap grid"><div class="panel"><h3>County + GPS</h3><p class="muted">Browser location when allowed, then rank by kilometres and county.</p></div><div class="panel"><h3>Kenyan filters</h3><p class="muted">Tribe, religion, lifestyle mode, age, and interests.</p></div><div class="panel"><h3>Chat after match</h3><p class="muted">Like, match, then talk. Report is one tap away.</p></div></section>`;
@@ -165,6 +179,19 @@ function bind() {
   const logout = document.getElementById("logout");
   if (logout) logout.onclick = () => { state.user = null; save(); state.view = "home"; render(); };
   const loc = document.getElementById("loc-btn"); if (loc) loc.onclick = requestLocation;
+  const installBtn = document.getElementById("install-btn");
+  if (installBtn) installBtn.onclick = async () => {
+    if (deferredInstall) {
+      deferredInstall.prompt();
+      const choice = await deferredInstall.userChoice;
+      if (choice.outcome === "accepted") toast("Installing Karibu…");
+      deferredInstall = null;
+      state.canInstall = false;
+      render();
+    } else {
+      toast("Android Chrome: menu ⋮ → Install app. iPhone Safari: Share → Add to Home Screen.");
+    }
+  };
   const form = document.getElementById("auth-form");
   if (form) form.onsubmit = e => {
     e.preventDefault();
